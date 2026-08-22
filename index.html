@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Clone</title>
+  <style>
+    :root {
+      --bg-color: #0f0f0f;
+      --nav-bg: #0f0f0f;
+      --text-color: #f1f1f1;
+      --text-secondary: #aaa;
+      --hover-bg: #272727;
+      --border-color: #303030;
+      --sidebar-width: 240px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Roboto", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+
+    /* TOP NAVBAR */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background-color: var(--nav-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 1000;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    .menu-btn:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .logo-icon {
+      background-color: #ff0000;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      width: 40%;
+      max-width: 600px;
+    }
+
+    .search-box {
+      display: flex;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 16px;
+      background-color: #121212;
+      border: 1px solid var(--border-color);
+      border-radius: 40px 0 0 40px;
+      color: var(--text-color);
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #1c62b9;
+    }
+
+    .search-btn {
+      padding: 8px 20px;
+      background-color: #222;
+      border: 1px solid var(--border-color);
+      border-left: none;
+      border-radius: 0 40px 40px 0;
+      color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .search-btn:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #ff4500;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      display: flex;
+      margin-top: 56px;
+    }
+
+    /* SIDEBAR */
+    aside {
+      width: var(--sidebar-width);
+      background-color: var(--bg-color);
+      height: calc(100vh - 56px);
+      position: fixed;
+      left: 0;
+      top: 56px;
+      overflow-y: auto;
+      padding: 12px;
+      transition: width 0.2s;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 10px 12px;
+      color: var(--text-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background-color: var(--hover-bg);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background-color: var(--border-color);
+      margin: 12px 0;
+    }
+
+    /* CONTENT AREA */
+    main {
+      margin-left: var(--sidebar-width);
+      width: calc(100% - var(--sidebar-width));
+      padding: 16px 24px;
+    }
+
+    /* CATEGORY PILLS */
+    .categories {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      background-color: #272727;
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+    }
+
+    .pill.active {
+      background-color: var(--text-color);
+      color: var(--bg-color);
+    }
+
+    /* VIDEO GRID */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      row-gap: 32px;
+    }
+
+    .video-card {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .thumbnail-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #272727;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .thumbnail-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 12px;
+      padding: 3px 4px;
+      border-radius: 4px;
+    }
+
+    .video-details {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .channel-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #555;
+      flex-shrink: 0;
+    }
+
+    .video-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .channel-name, .video-stats {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 768px) {
+      aside {
+        display: none;
+      }
+      main {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header>
+    <div class="nav-left">
+      <button class="menu-btn" id="menuToggle">&#9776;</button>
+      <a href="#" class="logo">
+        <span class="logo-icon">&#9654;</span> YouTube
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <div class="search-box">
+        <input type="text" class="search-input" placeholder="Search">
+        <button class="search-btn">&#128065;</button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <div class="user-avatar">M</div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="container">
+    
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <a href="#" class="sidebar-link active">Home</a>
+      <a href="#" class="sidebar-link">Shorts</a>
+      <a href="#" class="sidebar-link">Subscriptions</a>
+      <div class="sidebar-divider"></div>
+      <a href="#" class="sidebar-link">Library</a>
+      <a href="#" class="sidebar-link">History</a>
+      <a href="#" class="sidebar-link">Your Videos</a>
+      <a href="#" class="sidebar-link">Watch Later</a>
+      <div class="sidebar-divider"></div>
+      <a href="#" class="sidebar-link">Settings</a>
+      <a href="#" class="sidebar-link">Help</a>
+    </aside>
+
+    <!-- CONTENT -->
+    <main id="mainContent">
+      
+      <!-- CATEGORY PILLS -->
+      <div class="categories">
+        <button class="pill active">All</button>
+        <button class="pill">Gaming</button>
+        <button class="pill">Minecraft</button>
+        <button class="pill">Roblox</button>
+        <button class="pill">Live</button>
+        <button class="pill">Music</button>
+
+      </div>
+
+      <!-- VIDEO GRID -->
+      <div class="video-grid" id="videoGrid"></div>
+
+    </main>
+  </div>
+
+  <script>
+    // Sample Video Data
+    const videos = [
+      {
+        title: "Makerplays Epic Build Battle Series — Season 1 Finale",
+        channel: "Makerplays",
+        views: "15K views",
+        time: "2 days ago",
+        duration: "18:24",
+        thumbnail: "https://picsum.photos/300/170?random=1"
+      },
+      {
+        title: "Building the Ultimate Minecraft Survival Castle",
+        channel: "MakerGamez",
+        views: "42K views",
+        time: "1 week ago",
+        duration: "24:10",
+        thumbnail: "https://picsum.photos/300/170?random=2"
+      },
+      {
+        title: "Top 10 Best Roblox Games You Need to Play",
+        channel: "MakerGamez",
+        views: "8.9K views",
+        time: "3 days ago",
+        duration: "12:05",
+        thumbnail: "https://picsum.photos/300/170?random=3"
+      },
+      {
+        title: "Virtual Reality World Exploration Tour",
+        channel: "MakerVR",
+        views: "3.1K views",
+        time: "5 days ago",
+        duration: "15:45",
+        thumbnail: "https://picsum.photos/300/170?random=4"
+      },
+      {
+        title: "Fastest Editing Techniques for Shorts & Reels",
+        channel: "MakerMEMES",
+        views: "95K views",
+        time: "1 month ago",
+        duration: "08:12",
+        thumbnail: "https://picsum.photos/300/170?random=5"
+      },
+      {
+        title: "Minecraft Redstone Secrets Explained",
+        channel: "Makerplays",
+        views: "27K views",
+        time: "2 weeks ago",
+        duration: "10:30",
+        thumbnail: "https://picsum.photos/300/170?random=6"
+      }
+    ];
+
+    // Populate Video Grid Dynamically
+    const grid = document.getElementById("videoGrid");
+
+    videos.forEach(video => {
+      const card = document.createElement("div");
+      card.className = "video-card";
+
+      card.innerHTML = `
+        <div class="thumbnail-container">
+          <img src="${video.thumbnail}" alt="Thumbnail">
+          <span class="duration">${video.duration}</span>
+        </div>
+        <div class="video-details">
+          <div class="channel-avatar"></div>
+          <div class="video-info">
+            <div class="video-title">${video.title}</div>
+            <div class="channel-name">${video.channel}</div>
+            <div class="video-stats">${video.views} • ${video.time}</div>
+          </div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    // Toggle Sidebar Visibility
+    const menuBtn = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("mainContent");
+
+    menuBtn.addEventListener("click", () => {
+      if (sidebar.style.display === "none") {
+        sidebar.style.display = "block";
+        mainContent.style.marginLeft = "var(--sidebar-width)";
+        mainContent.style.width = "calc(100% - var(--sidebar-width))";
+      } else {
+        sidebar.style.display = "none";
+        mainContent.style.marginLeft = "0";
+        mainContent.style.width = "100%";
+      }
+    });
+  </script>
+</body>
+</html>
